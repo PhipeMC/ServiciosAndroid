@@ -40,8 +40,9 @@ public class MusicBackgroundService extends Service implements MediaPlayer.OnPre
         contenido = "Reproduciendo: "+uri;
         titulo = intent.getStringExtra("titulo");
         Toast.makeText(this, "uri: "+uri, Toast.LENGTH_SHORT).show();
+        Intent intent1 = new Intent(this, MainActivity.class);
 
-        mostrarNotificacion(this, null,titulo,contenido);
+        mostrarNotificacion(this, intent1,titulo,contenido);
 
         if(player == null){
             player = new MediaPlayer();
@@ -74,16 +75,14 @@ public class MusicBackgroundService extends Service implements MediaPlayer.OnPre
     }
 
     private void mostrarNotificacion(Context context, Intent intent, String titulo, String contenido) {
-        //createNotificationChannel(context,intent);
-        Intent resultIntent = new Intent(this, MainActivity.class);
-        PendingIntent resultPendingIntent = PendingIntent.getActivity(this, 1, resultIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+        PendingIntent resultPendingIntent = PendingIntent.getActivity(this, 1, intent, PendingIntent.FLAG_UPDATE_CURRENT);
 
-        NotificationCompat.Builder builder = new NotificationCompat.Builder(context, CHANNEL_ID)
-                .setSmallIcon(R.drawable.ic_baseline_book_24)
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(context, "My Notification")
                 .setContentTitle(titulo)
                 .setContentText(contenido)
+                .setSmallIcon(R.drawable.ic_baseline_book_24)
                 .setAutoCancel(true)
-                .setPriority(NotificationCompat.PRIORITY_HIGH)
+                //.setPriority(NotificationCompat.PRIORITY_HIGH)
                 .setContentIntent(resultPendingIntent);
 
         NotificationManagerCompat notificationManager =
@@ -91,7 +90,6 @@ public class MusicBackgroundService extends Service implements MediaPlayer.OnPre
 
         // notificationId is a unique int for each notification that you must define
         notificationManager.notify(1001, builder.build());
-
     }
 
     @Override
