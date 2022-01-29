@@ -1,5 +1,6 @@
 package net.ivanvega.fragmentosdinamicos;
 
+import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Context;
@@ -20,7 +21,6 @@ import androidx.core.app.NotificationManagerCompat;
 import java.io.IOException;
 
 public class MusicBackgroundService extends Service implements MediaPlayer.OnPreparedListener, MediaController.MediaPlayerControl, View.OnTouchListener {
-    private static final String CHANNEL_ID = "AUDIOLIBROS";
     MediaPlayer player;
     MediaController mediaController;
 
@@ -46,6 +46,12 @@ public class MusicBackgroundService extends Service implements MediaPlayer.OnPre
 
         if(player == null){
             player = new MediaPlayer();
+            player.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+                @Override
+                public void onCompletion(MediaPlayer mp) {
+                    onDestroy();
+                }
+            });
             mediaController = new MediaController(this);
             player.setOnPreparedListener(this);
             try {
@@ -97,6 +103,12 @@ public class MusicBackgroundService extends Service implements MediaPlayer.OnPre
         Toast.makeText(this, "Servicio Terminado", Toast.LENGTH_SHORT).show();
         player.stop();
         player.release();
+        try{
+            NotificationManager notificationManager = (NotificationManager) getApplicationContext().getSystemService(Context.NOTIFICATION_SERVICE);
+            notificationManager.cancel(1001);
+        }catch (Exception ex){
+
+        }
         super.onDestroy();
     }
 
